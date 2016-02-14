@@ -27,6 +27,13 @@ def split_list(lst, e, maxi):
 
     return chunks
 
+def popenp(*args, **kwargs):
+    try:
+        return Popen(*args, **kwargs)
+    except OSError as e:
+        print("Error while calling subprocess:", args, file=sys.stderr)
+        raise e
+
 def chain(xs):
     n = len(xs)
     ps = []
@@ -40,7 +47,7 @@ def chain(xs):
         if i != 0:
             d["stdin"] = prev.stdout
 
-        prev = subprocess.Popen(x, **d)
+        prev = popenp(x, **d)
         ps.append(prev)
 
     for p in ps:
@@ -50,13 +57,13 @@ def slurp(*args):
     chunks = split_list(args, "--", 1)
 
     if len(chunks) > 1:
-        cat = Popen(["/bin/cat"] + chunks[0], stdout=PIPE)
-        nextp = Popen(chunks[1], stdin=cat.stdout)
+        cat = popenp(["/bin/cat"] + chunks[0], stdout=PIPE)
+        nextp = popenp(chunks[1], stdin=cat.stdout)
         cat.stdout.close()
         cat.wait()
         nextp.wait()
     else:
-        cat = Popen(["/bin/cat"] + chunks[0])
+        cat = popenp(["/bin/cat"] + chunks[0])
         cat.wait()
 
 def spit(*args):
@@ -70,7 +77,7 @@ def spit(*args):
         raise ValueError("Expecting nextp")
 
     with open(outfn, "w") as outf:
-        nextp = Popen(chunks[1], stdout=outf)
+        nextp = popenp(chunks[1], stdout=outf)
         nextp.wait()
 
 def apply(*args):
