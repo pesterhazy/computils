@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pytest
 from .context import comp
 
 sample = "foo\n"
@@ -18,11 +19,17 @@ def test_slurp2(tmpdir, capfd):
 
     assert sample == capfd.readouterr()[0]
 
-def test_spit(tmpdir, capfd):
+def test_spit(tmpdir):
     f = tmpdir.join("output")
     comp.run("spit", str(f), "--", "echo", "foo")
 
     assert sample == f.read()
+
+def test_spit_without_nextp(tmpdir, capfd):
+    f = tmpdir.join("output")
+
+    with pytest.raises(ValueError):
+        comp.run("spit", str(f))
 
 def test_split_list():
     ex = ["a", "b", "a", "b", "a"]

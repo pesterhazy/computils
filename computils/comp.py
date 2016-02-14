@@ -46,12 +46,12 @@ def spit(*args):
 
     outfn = chunks[0][0]
 
+    if len(chunks) <= 1:
+        raise ValueError("Expecting nextp")
+
     with open(outfn, "w") as outf:
-        if len(chunks) > 1:
-            nextp = Popen(chunks[1], stdout=outf)
-            nextp.wait()
-        else:
-            assert False
+        nextp = Popen(chunks[1], stdout=outf)
+        nextp.wait()
 
 def run(*args):
     assert len(args)>1
