@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
+import subprocess
 from subprocess import Popen, PIPE
 
-ACTIONS = ["slurp", "spit"]
+ACTIONS = ["slurp", "spit", "apply"]
 
 def split_list(lst, e, maxi):
     n = 0
@@ -25,6 +27,24 @@ def split_list(lst, e, maxi):
 
     return chunks
 
+def chain(xs):
+    n = len(xs)
+    ps = []
+    prev = None
+
+    for i, x in enumerate(xs):
+        d = {}
+
+        if i != (n - 1):
+            d["stdout"] = subprocess.PIPE
+        if i != 0:
+            d["stdin"] = prev.stdout
+
+        prev = subprocess.Popen(x, **d)
+        ps.append(prev)
+
+    for p in ps:
+        p.wait()
 
 def slurp(*args):
     chunks = split_list(args, "--", 1)
@@ -52,6 +72,14 @@ def spit(*args):
     with open(outfn, "w") as outf:
         nextp = Popen(chunks[1], stdout=outf)
         nextp.wait()
+
+def apply(*args):
+    chunks = split_list(args, "--", 2)
+
+    if len(chunks) == 3:
+        chain([chunks[1],chunks[0],chunks[2]])
+    else:
+        assert False, "Unexpected number of argument chunks"
 
 def run(*args):
     assert len(args)>1

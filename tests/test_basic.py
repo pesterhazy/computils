@@ -31,6 +31,11 @@ def test_spit_without_nextp(tmpdir, capfd):
     with pytest.raises(ValueError):
         comp.run("spit", str(f))
 
+def test_apply(capfd):
+    comp.run("apply", "sed", "s/due/two/","--","echo","one due three","--","cat")
+
+    assert "one two three" == capfd.readouterr()[0].strip()
+
 def test_split_list():
     ex = ["a", "b", "a", "b", "a"]
 
