@@ -3,7 +3,7 @@
 import sys
 from subprocess import Popen, PIPE
 
-ACTIONS = ["slurp"]
+ACTIONS = ["slurp", "spit"]
 
 def split_list(lst, e, maxi):
     n = 0
@@ -38,6 +38,20 @@ def slurp(*args):
     else:
         cat = Popen(["/bin/cat"] + chunks[0])
         cat.wait()
+
+def spit(*args):
+    chunks = split_list(args, "--", 1)
+
+    assert 1==len(chunks[0]), "Only one output file expected"
+
+    outfn = chunks[0][0]
+
+    with open(outfn, "w") as outf:
+        if len(chunks) > 1:
+            nextp = Popen(chunks[1], stdout=outf)
+            nextp.wait()
+        else:
+            assert False
 
 def run(*args):
     assert len(args)>1

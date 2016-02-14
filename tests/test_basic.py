@@ -18,6 +18,12 @@ def test_slurp2(tmpdir, capfd):
 
     assert sample == capfd.readouterr()[0]
 
+def test_spit(tmpdir, capfd):
+    f = tmpdir.join("output")
+    comp.run("spit", str(f), "--", "echo", "foo")
+
+    assert sample == f.read()
+
 def test_split_list():
     ex = ["a", "b", "a", "b", "a"]
 
