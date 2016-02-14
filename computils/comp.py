@@ -78,6 +78,8 @@ def apply(*args):
 
     if len(chunks) == 3:
         chain([chunks[1],chunks[0],chunks[2]])
+    elif len(chunks) == 2:
+        chain([chunks[1],chunks[0]])
     else:
         assert False, "Unexpected number of argument chunks"
 

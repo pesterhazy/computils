@@ -36,6 +36,11 @@ def test_apply(capfd):
 
     assert "one two three" == capfd.readouterr()[0].strip()
 
+def test_apply2(capfd):
+    comp.run("apply", "sed", "s/due/two/","--","echo","one due three")
+
+    assert "one two three" == capfd.readouterr()[0].strip()
+
 def test_split_list():
     ex = ["a", "b", "a", "b", "a"]
 
