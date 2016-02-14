@@ -6,7 +6,6 @@ from subprocess import Popen, PIPE
 ACTIONS = ["slurp"]
 
 def slurp(*args):
-    print "slurp", args
     try:
         idx = args.index("--")
         before = args[:idx]
@@ -29,4 +28,8 @@ def run(*args):
     assert action in ACTIONS
     globals()[action](*args[1:])
 
-run(*sys.argv[1:])
+def main():
+    run(*sys.argv[1:])
+
+if __name__ == "__main__":
+    main()
